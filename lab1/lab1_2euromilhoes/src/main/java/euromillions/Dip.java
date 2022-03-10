@@ -13,7 +13,12 @@ import java.util.Random;
  */
 public class Dip {
 
-
+    static final int STARS_N = 2;
+    static final int NUMBERS_N = 5;
+    static final int STARS_MIN = 1;
+    static final int STARS_MAX = 12;
+    static final int NUMBERS_MIN = 1;
+    static final int NUMBERS_MAX = 50;
     private SetOfNaturals numbers;
     private SetOfNaturals starts;
 
@@ -25,7 +30,17 @@ public class Dip {
     public Dip(int[] arrayOfNumbers, int[] arrayOfStarts) {
         this();
 
-        if (5 == arrayOfNumbers.length && 2 == arrayOfStarts.length) {
+        // Verify numbers and stars
+        for(int n : arrayOfNumbers){
+            if(n < NUMBERS_MIN || n > NUMBERS_MAX)
+                throw new IllegalArgumentException("wrong number range. Should be from 1 to 50");
+        }
+        for(int n : arrayOfStarts){
+            if(n < STARS_MIN || n > STARS_MAX)
+                throw new IllegalArgumentException("wrong star range. Should be from 1 to 12");
+        }
+
+        if (NUMBERS_N == arrayOfNumbers.length && STARS_N == arrayOfStarts.length) {
             numbers.add(arrayOfNumbers);
             starts.add(arrayOfStarts);
         } else {
@@ -46,15 +61,15 @@ public class Dip {
         Random generator = new Random();
 
         Dip randomDip = new Dip();
-        for (int i = 0; i < 5; ) {
-            int candidate = generator.nextInt(49) + 1;
+        for (int i = 0; i < NUMBERS_N; ) {
+            int candidate = generator.nextInt(NUMBERS_MAX) + 1;
             if (!randomDip.getNumbersColl().contains(candidate)) {
                 randomDip.getNumbersColl().add(candidate);
                 i++;
             }
         }
-        for (int i = 0; i < 2; ) {
-            int candidate = generator.nextInt(9) + 1;
+        for (int i = 0; i < STARS_N; ) {
+            int candidate = generator.nextInt(STARS_MAX) + 1;
             if (!randomDip.getStarsColl().contains(candidate)) {
                 randomDip.getStarsColl().add(candidate);
                 i++;
@@ -104,8 +119,9 @@ public class Dip {
         }
         sb.append("] S[");
         for (int star : getStarsColl()) {
-            sb.append(String.format("%d", star));
+            sb.append(String.format("%3d", star));
         }
+        sb.append("]");
         return sb.toString();
     }
 }

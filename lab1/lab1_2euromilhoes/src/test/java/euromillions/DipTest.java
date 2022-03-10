@@ -32,8 +32,11 @@ public class DipTest {
 
     @Test
     public void testConstructorFromBadArrays() {
-        // todo: instantiate a dip passing valid or invalid arrays
-        fail("constructor from bad arrays: test not implemented yet");
+        assertThrows(IllegalArgumentException.class,
+                () -> {
+                    instance = new Dip(new int[]{2, 4, 6, 8}, new int[]{1, 2});
+                }
+                );
     }
 
     @Test
@@ -41,6 +44,19 @@ public class DipTest {
         // note: correct the implementation of the format(), not the test...
         String result = instance.format();
         assertEquals("N[ 10 20 30 40 50] S[  1  2]", result, "format as string: formatted string not as expected. ");
+    }
+
+    @Test
+    public void testRanges() {
+        assertDoesNotThrow(() -> instance = new Dip(new int[]{2, 4, 6, 8, 16}, new int[]{1, 2}));
+        assertThrows( IllegalArgumentException.class,
+                () -> instance = new Dip(new int[]{2, 4, 6, 8, 51}, new int[]{1, 2}));
+        assertThrows( IllegalArgumentException.class,
+                () -> instance = new Dip(new int[]{2, 4, 6, 8, 0}, new int[]{1, 2}));
+        assertThrows( IllegalArgumentException.class,
+                () -> instance = new Dip(new int[]{2, 4, 6, 8, 16}, new int[]{1, 13}));
+        assertThrows( IllegalArgumentException.class,
+                () -> instance = new Dip(new int[]{2, 4, 6, 8, 16}, new int[]{1, 0}));
     }
 
 }
