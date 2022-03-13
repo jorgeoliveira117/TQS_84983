@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="euromillions-play" />
+        <module name="lab1_2euromilhoes" />
       </profile>
     </annotationProcessing>
   </component>

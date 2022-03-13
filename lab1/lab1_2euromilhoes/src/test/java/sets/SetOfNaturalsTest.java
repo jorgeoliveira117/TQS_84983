@@ -62,4 +62,24 @@ public class SetOfNaturalsTest {
     }
 
 
+    @Test
+    @DisplayName("A set does not allow duplicates.")
+    public void testAddDuplicate() {
+        setA.add(42);
+        assertThrows(IllegalArgumentException.class,
+                () -> {setA.add(42);});
+    }
+
+    @Test
+    @DisplayName("A set only allows numbers from 1 (inclusive) to infinity.")
+    public void testAddNegative() {
+        assertThrows(IllegalArgumentException.class,
+                () -> {setA.add(0);});
+        assertThrows(IllegalArgumentException.class,
+                () -> {setA.add(-10);});
+        assertDoesNotThrow(() -> {setA.add(1);});
+        assertDoesNotThrow(() -> {setA.add(10000000);});
+    }
+
+
 }
