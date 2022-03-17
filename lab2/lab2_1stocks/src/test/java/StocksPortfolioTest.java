@@ -10,13 +10,14 @@ class StocksPortfolioTest {
     @Test
     void getTotalValue() {
         IStockmarketService mockMarket = mock(IStockmarketService.class);
-
         StocksPortfolio portfolioTest = new StocksPortfolio(mockMarket);
 
         double microStockValue = 262.49;
-        int microStockQty = 10;
         double edpStockValue = 4.28;
+
+        int microStockQty = 10;
         int edpStockQty = 42;
+
         when(mockMarket.lookUpPrice("Microsoft")).thenReturn(microStockValue);
         when(mockMarket.lookUpPrice("EDP")).thenReturn(edpStockValue);
 
@@ -28,5 +29,8 @@ class StocksPortfolioTest {
          // assertEquals(realTotal, portfolioTest.getTotalValue());
 
          assertThat(portfolioTest.getTotalValue(), is(realTotal));
+
+         verify(mockMarket, times(2))
+                 .lookUpPrice(anyString());
     }
 }
