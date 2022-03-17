@@ -1,7 +1,10 @@
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 class StocksPortfolioTest {
 
     @Test
@@ -22,7 +25,8 @@ class StocksPortfolioTest {
 
         double realTotal = microStockValue * microStockQty + edpStockValue * edpStockQty;
 
-         assertEquals(realTotal, portfolioTest.getTotalValue());
+         // assertEquals(realTotal, portfolioTest.getTotalValue());
 
+         assertThat(portfolioTest.getTotalValue(), is(realTotal));
     }
 }
