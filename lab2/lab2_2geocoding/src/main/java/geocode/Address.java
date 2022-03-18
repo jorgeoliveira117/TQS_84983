@@ -1,3 +1,5 @@
+package geocode;
+
 import java.util.Objects;
 
 public class Address {
