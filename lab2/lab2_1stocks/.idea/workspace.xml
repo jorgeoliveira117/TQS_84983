@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4f3ebf37-fb06-4704-928a-6c6d70d1c48b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../lab2_2geocoding/src/main/resources/config.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lab2_2geocoding/src/test/java/geocode/AddressResolverTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab2_2geocoding/src/test/java/integration/AddressResolverIT.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab2_2geocoding/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2_2geocoding/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab2_2geocoding/src/main/java/Address.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -54,8 +54,6 @@ public class AddressResolver {
             String state = (String) address.get("adminArea3");
             String zip = (String) address.get("postalCode");
             return Optional.of(new Address(road, city, state, zip, null));
-
-
         }
 
     }
