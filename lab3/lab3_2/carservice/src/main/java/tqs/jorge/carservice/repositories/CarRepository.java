@@ -1,8 +1,8 @@
-package com.example.demo.repositories;
+package tqs.jorge.carservice.repositories;
 
-import com.example.demo.models.Car;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import tqs.jorge.carservice.models.Car;
 
 import java.util.List;
 

@@ -79,6 +79,7 @@ public class SetOfNaturalsTest {
                 () -> {setA.add(-10);});
         assertDoesNotThrow(() -> {setA.add(1);});
         assertDoesNotThrow(() -> {setA.add(10000000);});
+
     }
 
 

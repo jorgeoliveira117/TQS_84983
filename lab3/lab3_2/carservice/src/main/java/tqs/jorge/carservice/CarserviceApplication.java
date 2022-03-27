@@ -1,13 +1,13 @@
-package com.example.demo;
+package tqs.jorge.carservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication {
+public class CarserviceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(CarserviceApplication.class, args);
     }
 
 }
