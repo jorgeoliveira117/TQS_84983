@@ -5,9 +5,11 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.java.hu.De;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Format;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,19 +23,26 @@ public class BookSearchSteps {
     List<Book> result = new ArrayList<>();
 
     @ParameterType("([0-9]{4})-([0-9]{2})-([0-9]{2})")
-    public LocalDate isoDate(String year, String month, String day){
-        return LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
+    public Date isodate(String year, String month, String day) {
+        Calendar date = Calendar.getInstance();
+        date.set(Integer.parseInt(year), (Integer.parseInt(month))-1, Integer.parseInt(day));
+        return date.getTime();
     }
 
-    @Given("a book with the title '{string}', written by '{string}', published in {isoDate}")
-    public void addNewBook(final String title, final String author, final LocalDate published) {
-        Book book = new Book(title, author, java.sql.Date.valueOf(published));
+    @Given("another book with the title {string}, written by {string}, published in {isodate}")
+    @Given("a book with the title {string}, written by {string}, published in {isodate}")
+    public void addNewBook(String title, String author, Date date) {
+        Book book = new Book(title, author,date);
         library.addBook(book);
     }
 
     @When("the customer searches for books published between {int} and {int}")
     public void setSearchParameters(final int from, final int to) {
-        result = library.findBooks(Calendar.getInstance().set(Calendar.YEAR, from), new Date());
+        Calendar fromCal = Calendar.getInstance();
+        fromCal.set(from, Calendar.JANUARY, 1);
+        Calendar toCal = Calendar.getInstance();
+        toCal.set(to, Calendar.DECEMBER, 31);
+        result = library.findBooks(fromCal.getTime(), toCal.getTime());
     }
 
     @Then("{int} books should have been found")
@@ -45,24 +54,4 @@ public class BookSearchSteps {
     public void verifyBookAtPosition(final int position, final String title) {
         assertEquals(title, result.get(position - 1).getTitle());
     }
-
-
-    /*
-    @Given("I have {int} cukes in my belly")
-    public void I_have_cukes_in_my_belly(int cukes) {
-        Belly belly = new Belly();
-        belly.eat(cukes);
-    }
-    @When("I wait {int} hour")
-    public void i_wait_hour(int hours){
-        Belly belly = new Belly();
-        belly.wait(hours);
-    }
-    @Then("my belly should growl")
-    public void my_belly_should_growl() {
-        Belly belly = new Belly();
-        belly.growl();
-    }
-
-    */
 }
