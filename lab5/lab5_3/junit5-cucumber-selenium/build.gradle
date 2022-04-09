@@ -1,0 +1,50 @@
+repositories {
+    mavenCentral()
+}
+
+ext {
+    slf4jVersion  = '1.7.36'
+    logbackVersion  = '1.2.11'
+
+    junitJupiterVersion = '5.8.2'
+    junitPlatformSuiteVersion = '1.8.2'
+    cucumberVersion = '7.2.3'
+    seleniumJavaVersion = '4.1.2'
+    webdrivermanagerVersion  = '5.1.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar {
+    archiveBaseName = 'junit5-cucumber-selenium'
+    archiveVersion = '1.0.0'
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+}
+
+compileTestJava {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    options.compilerArgs += '-parameters'
+}
+
+dependencies {
+    implementation("org.slf4j:slf4j-api:${slf4jVersion}")
+    implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitJupiterVersion}")
+    testImplementation("org.junit.platform:junit-platform-suite:${junitPlatformSuiteVersion}")
+    testImplementation("io.cucumber:cucumber-java:${cucumberVersion}")
+    testImplementation("io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}")
+    testImplementation("org.seleniumhq.selenium:selenium-java:${seleniumJavaVersion}")
+    testImplementation("io.github.bonigarcia:webdrivermanager:${webdrivermanagerVersion}")
+}
