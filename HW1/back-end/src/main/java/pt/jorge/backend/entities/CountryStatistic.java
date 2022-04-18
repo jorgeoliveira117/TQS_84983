@@ -3,6 +3,11 @@ package pt.jorge.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountryStatistic {
 
@@ -12,8 +17,11 @@ public class CountryStatistic {
     private Case cases;
     private Death deaths;
     private Test tests;
-    private String day;
+    private Calendar day;
     private String time;
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 
     public CountryStatistic() {
     }
@@ -66,12 +74,18 @@ public class CountryStatistic {
         this.tests = tests;
     }
 
-    public String getDay() {
+    public Calendar getDay() {
         return day;
     }
 
     public void setDay(String day) {
-        this.day = day;
+        Calendar cal = Calendar.getInstance();
+        try{
+            cal.setTime(sdf.parse(day));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        this.day = cal;
     }
 
     public String getTime() {
@@ -91,7 +105,7 @@ public class CountryStatistic {
                 ", cases=" + cases +
                 ", deaths=" + deaths +
                 ", tests=" + tests +
-                ", day='" + day + '\'' +
+                ", day='" + sdf.format(day.getTime()) + '\'' +
                 ", time='" + time + '\'' +
                 '}';
     }

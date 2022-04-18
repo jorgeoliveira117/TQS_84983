@@ -1,4 +1,4 @@
-package pt.jorge.backend;
+package pt.jorge.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import pt.jorge.backend.entities.CountryStatistic;
