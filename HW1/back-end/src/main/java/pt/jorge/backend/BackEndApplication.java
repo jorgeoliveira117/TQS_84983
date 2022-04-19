@@ -10,7 +10,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
-import pt.jorge.backend.entities.CountryStatisticsResponse;
+import pt.jorge.backend.entities.helper.CountryStatisticsResponse;
 
 import java.util.Collections;
 

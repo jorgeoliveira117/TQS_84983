@@ -1,16 +1,13 @@
 package pt.jorge.backend.cache;
 
-import pt.jorge.backend.entities.CountryStatistic;
+import pt.jorge.backend.entities.helper.CountryStatistic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class Cache {
+public class Cache<T> {
     // Key is String with format "country-date"
     private Map<String, Long> times;
-    private Map<String, CountryStatistic> values;
+    private Map<String, T> values;
 
     /** Time to live in milliseconds */
     private long ttl;
@@ -34,19 +31,27 @@ public class Cache {
     }
 
     /** Put a value in the cache adding the current time */
-    public CountryStatistic put(String key, CountryStatistic value){
+    public T put(String key, T value){
         times.put(key, System.currentTimeMillis());
         values.put(key, value);
         return value;
     }
 
-    public CountryStatistic get(String key){
+    public T get(String key){
         return values.get(key);
     }
 
-    public CountryStatistic remove(String key){
+    public Collection<T> values(){
+        return values.values();
+    }
+
+    public T remove(String key){
         times.remove(key);
         return values.remove(key);
+    }
+
+    public Set<Map.Entry<String, T>> entrySet(){
+        return values.entrySet();
     }
 
     /** Reset the time for a certain key, if it exists */

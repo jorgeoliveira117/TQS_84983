@@ -1,23 +1,15 @@
-package pt.jorge.backend.entities;
+package pt.jorge.backend.entities.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Death {
+public class Test {
 
-    private String newCases;
     private String millionPop;
     private int total;
 
-    public Death(){
-    }
+    public Test() {
 
-    public String getNewCases() {
-        return newCases;
-    }
-
-    public void setNewCases(String newCases) {
-        this.newCases = newCases;
     }
 
     public String getMillionPop() {
@@ -38,9 +30,8 @@ public class Death {
 
     @Override
     public String toString() {
-        return "Death{" +
-                "newCases='" + newCases + '\'' +
-                ", millionPop='" + millionPop + '\'' +
+        return "Test{" +
+                "millionPop='" + millionPop + '\'' +
                 ", total=" + total +
                 '}';
     }

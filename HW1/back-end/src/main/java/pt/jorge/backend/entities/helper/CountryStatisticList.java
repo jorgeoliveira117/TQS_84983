@@ -1,7 +1,6 @@
-package pt.jorge.backend.entities;
+package pt.jorge.backend.entities.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import pt.jorge.backend.entities.CountryStatistic;
 
 import java.util.ArrayList;
 import java.util.List;

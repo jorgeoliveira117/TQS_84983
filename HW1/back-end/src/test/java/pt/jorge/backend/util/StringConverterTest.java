@@ -3,6 +3,7 @@ package pt.jorge.backend.util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,8 +13,11 @@ class StringConverterTest {
     @Test
     @DisplayName("The string displayed follows the correct format")
     void countryAndDateToday() {
+        Calendar cal = Calendar.getInstance();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         // Simple test for today's date
-        String expectedResult = "portugal-2022-04-18";
+        String expectedResult = "portugal-" + sdf.format(cal.getTime());
         Calendar today = Calendar.getInstance();
         String countryDate = StringConverter.countryAndDate("portugal", today);
         assertEquals(expectedResult, countryDate);

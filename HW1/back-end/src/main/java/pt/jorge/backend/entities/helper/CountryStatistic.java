@@ -1,4 +1,4 @@
-package pt.jorge.backend.entities;
+package pt.jorge.backend.entities.helper;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountryStatistic {
