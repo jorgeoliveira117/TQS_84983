@@ -1,18 +1,25 @@
 package pt.jorge.backend.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import pt.jorge.backend.cache.Cache;
 import pt.jorge.backend.entities.CovidDetails;
 import pt.jorge.backend.entities.CovidDetailsSimple;
+import pt.jorge.backend.fetcher.CovidFetcher;
 import pt.jorge.backend.util.Countries;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @RestController
 public class CovidController {
+
+    private static final Logger log = LoggerFactory.getLogger(CovidFetcher.class);
 
     private List<String> countries;
     // Cache where today's cases will be stored
@@ -23,8 +30,12 @@ public class CovidController {
     private Cache<CovidDetails> worldCases;
     // Cache for each continent's cases
     private Cache<CovidDetails> continentCases;
+    // Covid API fetcher
+    private CovidFetcher cf;
 
-    public CovidController(){
+    public CovidController(RestTemplateBuilder builder){
+        cf = new CovidFetcher(builder);
+
         countries = Countries.getCountries();
         // Daily cache has a 24h ttl
         dailyCases = new Cache<>(24 * 3600 * 1000);
@@ -36,6 +47,16 @@ public class CovidController {
         continentCases = new Cache<>(24 * 3600 * 1000);
 
         // Maybe fill dailyCases, worldCases and continentCases(?)
+
+        log.info(cf.getToday("portugal").toString());
+        log.info(cf.getToday().toString());
+        log.info(""+cf.getHistory("portugal").size());
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 3);
+        cal.set(Calendar.DAY_OF_MONTH, 20);
+        log.info(cf.getHistory("portugal", cal).toString());
+
     }
 
     /** Returns all countries*/

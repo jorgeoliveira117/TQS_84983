@@ -5,6 +5,7 @@ import pt.jorge.backend.entities.helper.Case;
 import pt.jorge.backend.entities.helper.Death;
 import pt.jorge.backend.entities.helper.Test;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class CovidDetailsSimple {
@@ -16,11 +17,16 @@ public class CovidDetailsSimple {
     private int population;
     // Day of statistic
     private Calendar day;
+    // Time of statistic
+    private Calendar time;
     // Stats related to cases
     private int newCases;
     private int activeCases;
     // Stats related to deaths
     private int newDeaths;
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
 
     public CovidDetailsSimple(){}
@@ -67,6 +73,14 @@ public class CovidDetailsSimple {
         this.day = day;
     }
 
+    public Calendar getTime() {
+        return time;
+    }
+
+    public void setTime(Calendar time) {
+        this.time = time;
+    }
+
     public int getNewCases() {
         return newCases;
     }
@@ -94,10 +108,11 @@ public class CovidDetailsSimple {
     @Override
     public String toString() {
         return "CovidDetailsSimple{" +
-                "continent='" + continent + '\'' +
-                ", country='" + country + '\'' +
+                "continent=" + continent +
+                ", country=" + country +
                 ", population=" + population +
-                ", day=" + day +
+                ", day=" + sdf.format(day.getTime()) +
+                ", time=" + sdfTime.format(time.getTime()) +
                 ", newCases=" + newCases +
                 ", activeCases=" + activeCases +
                 ", newDeaths=" + newDeaths +

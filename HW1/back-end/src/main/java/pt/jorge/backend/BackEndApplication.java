@@ -24,32 +24,4 @@ public class BackEndApplication {
     public static void main(String[] args){
         SpringApplication.run(BackEndApplication.class, args);
     }
-
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
-
-    @Bean
-    public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
-        return args -> {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-            headers.set("X-RapidAPI-Host", "covid-193.p.rapidapi.com");
-            headers.set("X-RapidAPI-Key", "8b7adc7dd1mshc90568bcfe94194p19bf1ajsnb9339fef134f");
-
-            HttpEntity request = new HttpEntity(headers);
-
-            String url = "https://covid-193.p.rapidapi.com/statistics?country=portugal";
-            ResponseEntity<CountryStatisticsResponse> stats = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    request,
-                    CountryStatisticsResponse.class
-            );
-            log.info(stats.getBody().toString());
-        };
-    }
 }

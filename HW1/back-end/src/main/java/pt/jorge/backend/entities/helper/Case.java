@@ -1,17 +1,25 @@
 package pt.jorge.backend.entities.helper;
 
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pt.jorge.backend.fetcher.CovidFetcher;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Case {
+    private static final Logger log = LoggerFactory.getLogger(CovidFetcher.class);
 
+    @JsonProperty("new")
     private String newCases;
-    private int active;
-    private int critical;
-    private int recovered;
+    private String active;
+    private String critical;
+    private String recovered;
+    @JsonProperty("1M_pop")
     private String millionPop;
-    private int total;
+    private String total;
 
     public Case(){
 
@@ -25,27 +33,27 @@ public class Case {
         this.newCases = newCases;
     }
 
-    public int getActive() {
+    public String getActive() {
         return active;
     }
 
-    public void setActive(int active) {
+    public void setActive(String active) {
         this.active = active;
     }
 
-    public int getCritical() {
+    public String getCritical() {
         return critical;
     }
 
-    public void setCritical(int critical) {
+    public void setCritical(String critical) {
         this.critical = critical;
     }
 
-    public int getRecovered() {
+    public String getRecovered() {
         return recovered;
     }
 
-    public void setRecovered(int recovered) {
+    public void setRecovered(String recovered) {
         this.recovered = recovered;
     }
 
@@ -57,22 +65,22 @@ public class Case {
         this.millionPop = millionPop;
     }
 
-    public int getTotal() {
+    public String getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(String total) {
         this.total = total;
     }
 
     @Override
     public String toString() {
         return "Case{" +
-                "newCases='" + newCases + '\'' +
+                "new=" + newCases +
                 ", active=" + active +
                 ", critical=" + critical +
                 ", recovered=" + recovered +
-                ", millionPop='" + millionPop + '\'' +
+                ", millionPop=" + millionPop +
                 ", total=" + total +
                 '}';
     }

@@ -17,9 +17,10 @@ public class CountryStatistic {
     private Death deaths;
     private Test tests;
     private Calendar day;
-    private String time;
+    private Calendar time;
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
 
     public CountryStatistic() {
@@ -87,25 +88,25 @@ public class CountryStatistic {
         this.day = cal;
     }
 
-    public String getTime() {
+    public Calendar getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Calendar time) {
         this.time = time;
     }
 
     @Override
     public String toString() {
         return "CountryStatistic{" +
-                "continent='" + continent + '\'' +
-                ", country='" + country + '\'' +
+                "continent=" + continent +
+                ", country=" + country +
                 ", population=" + population +
                 ", cases=" + cases +
                 ", deaths=" + deaths +
                 ", tests=" + tests +
-                ", day='" + sdf.format(day.getTime()) + '\'' +
-                ", time='" + time + '\'' +
+                ", day=" + sdf.format(day.getTime()) +
+                ", time=" + sdfTime.format(time.getTime()) +
                 '}';
     }
 }
