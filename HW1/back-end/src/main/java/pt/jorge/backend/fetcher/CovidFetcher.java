@@ -22,10 +22,11 @@ public class CovidFetcher {
     // Not the best aproach, but as the git repository is only shared with the teacher it should be 'safe';
     private static final String apiKey = "8b7adc7dd1mshc90568bcfe94194p19bf1ajsnb9339fef134f";
 
+
+
     private final RestTemplate restTemplate;
     // Used in every request
     private final HttpEntity<CountryStatisticsResponse> request;
-
 
     private final String todayURL = "https://covid-193.p.rapidapi.com/statistics";
     private final String historyURL = "https://covid-193.p.rapidapi.com/history";
@@ -60,7 +61,6 @@ public class CovidFetcher {
             return null;
         return convert(response);
     }
-
     /** Returns statistics for a country */
     public CovidDetails getToday(String country){
         String url = todayURL + "?country=" + country;

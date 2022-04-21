@@ -78,14 +78,8 @@ public class CountryStatistic {
         return day;
     }
 
-    public void setDay(String day) {
-        Calendar cal = Calendar.getInstance();
-        try{
-            cal.setTime(sdf.parse(day));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        this.day = cal;
+    public void setDay(Calendar day) {
+        this.day = day;
     }
 
     public Calendar getTime() {

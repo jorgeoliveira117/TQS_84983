@@ -1,5 +1,6 @@
 package pt.jorge.backend.cache;
 
+import com.sun.source.tree.Tree;
 import pt.jorge.backend.entities.helper.CountryStatistic;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class Cache<T> {
     public Cache(long ttl){
         this.ttl = ttl;
         times = new HashMap<>();
-        values = new HashMap<>();
+        values = new TreeMap<>();
     }
 
     public Cache(){
@@ -43,6 +44,10 @@ public class Cache<T> {
 
     public Collection<T> values(){
         return values.values();
+    }
+
+    public Set<String> keySet(){
+        return values.keySet();
     }
 
     public T remove(String key){
