@@ -2,16 +2,19 @@ package pt.jorge.backend.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import pt.jorge.backend.cache.Cache;
 import pt.jorge.backend.entities.CovidDetails;
 import pt.jorge.backend.entities.CovidDetailsSimple;
+import pt.jorge.backend.exceptions.CountryAndDateNotFoundException;
+import pt.jorge.backend.exceptions.CountryNotFoundException;
+import pt.jorge.backend.exceptions.InvalidDateException;
+import pt.jorge.backend.exceptions.InvalidIdException;
 import pt.jorge.backend.fetcher.CovidFetcher;
 import pt.jorge.backend.util.Countries;
-import pt.jorge.backend.util.StringConverter;
+import pt.jorge.backend.util.Dates;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,9 +43,9 @@ public class CovidController {
     // Covid API fetcher
     private CovidFetcher fetcher;
 
-    public CovidController(RestTemplateBuilder builder){
+    public CovidController(CovidFetcher fetcher){
         today = Calendar.getInstance();
-        fetcher = new CovidFetcher(builder);
+        this.fetcher = fetcher;
         continents = new ArrayList<>();
         dailyTop = new ArrayList<>();
         countries = Countries.getCountries();
@@ -72,16 +75,14 @@ public class CovidController {
     @GetMapping("/cases/{country}")
     private CovidDetails casesForCountryToday(@PathVariable String country) {
         log.info("GET /cases/" + country);
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
 
         if(dailyCases.size() == 0)
             addToCache(fetcher.getToday(), dailyCases);
-        CovidDetails detailsForCountry = dailyCases.get(StringConverter.countryAndDate(country, Calendar.getInstance()));
-
+        CovidDetails detailsForCountry = dailyCases.get(Dates.countryAndDate(country, Calendar.getInstance()));
         clearExpired();
+
+        if(detailsForCountry == null)
+            throw new CountryNotFoundException(country);
         return detailsForCountry;
     }
 
@@ -89,30 +90,26 @@ public class CovidController {
     @GetMapping("/cases/{country}/{date}")
     private CovidDetails casesForCountryDate(@PathVariable String country, @PathVariable String date) {
         log.info("GET /cases/" + country + "/" + date);
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
+
         Calendar day = Calendar.getInstance();
         try{
             day.setTime(sdf.parse(date));
         } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-            // ALTERAR
-            // ALTERAR
-            // ALTERAR
-            // ALTERAR
+            throw new InvalidDateException(date);
         }
-        String key = StringConverter.countryAndDate(country, day);
+
+        String key = Dates.countryAndDate(country, day);
         CovidDetails detailsForCountry;
         if(!olderCases.containsKey(key))
             addToCache(fetcher.getHistory(country, day), olderCases);
         else
             olderCases.reset(key);
-        detailsForCountry= olderCases.get(key);
+
+        detailsForCountry = olderCases.get(key);
 
         clearExpired();
+        if(detailsForCountry == null)
+            throw new CountryAndDateNotFoundException(country, date);
         return detailsForCountry;
     }
 
@@ -126,7 +123,7 @@ public class CovidController {
         today = Calendar.getInstance();
         List<CovidDetails> contDetails = new ArrayList<>();
         for(String continent: continents)
-            contDetails.add(dailyCases.get(StringConverter.countryAndDate(continent, today)));
+            contDetails.add(dailyCases.get(Dates.countryAndDate(continent, today)));
 
         clearExpired();
         return contDetails;
@@ -135,7 +132,7 @@ public class CovidController {
     /** Returns today's cases for the whole world*/
     @GetMapping("/cases")
     private List<CovidDetails> casesWorld() {
-        log.info("GET /cases/world");
+        log.info("GET /cases");
         if(dailyCases.size() == 0)
             addToCache(fetcher.getToday(), dailyCases);
 
@@ -147,9 +144,10 @@ public class CovidController {
     @GetMapping("/cases/top/{n}")
     private List<CovidDetailsSimple> topCases(@PathVariable int n) {
         log.info("GET /cases/top/" + n);
+
         if(n < 0){
             clearExpired();
-            return new ArrayList<>();
+            throw new InvalidIdException(n);
         }
         if(dailyCases.size() == 0)
             addToCache(fetcher.getToday(), dailyCases);
@@ -171,24 +169,24 @@ public class CovidController {
     @GetMapping("/cases/evolution/{country}")
     private List<CovidDetails> evolution(@PathVariable String country) {
         log.info("GET /cases/evolution/" + country);
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
-        // CHECK IF COUNTRY IS VALID, THROW ERROR
         List<CovidDetails> evolution = new ArrayList<>();
         Calendar day = Calendar.getInstance();
         if(dailyCases.size() == 0)
             addToCache(fetcher.getToday(), dailyCases);
-        String key = StringConverter.countryAndDate(country, day);
+        String key = Dates.countryAndDate(country, day);
+        if(dailyCases.get(key) == null)
+            throw new CountryNotFoundException(country);
         evolution.add(dailyCases.get(key));
         for(int i = 1; i < 7; i++){
             day.add(Calendar.DAY_OF_MONTH, -1);
-            key = StringConverter.countryAndDate(country, day);
-            if(!olderCases.containsKey(key))
-                addToCache(fetcher.getHistory(country, day), olderCases);
+            key = Dates.countryAndDate(country, day);
+            if(!olderCases.containsKey(key)){
+                addToCache(CovidDetails.reduce(fetcher.getHistory(country, day)), olderCases);
+            }
             else
                 olderCases.reset(key);
-            evolution.add(olderCases.get(key));
+            if(olderCases.containsKey(key))
+                evolution.add(olderCases.get(key));
         }
         clearExpired();
         return evolution;
@@ -262,13 +260,17 @@ public class CovidController {
 
     /** Adds several values to a cache */
     private void addToCache(List<CovidDetails> list, Cache<CovidDetails> cache){
+        if(list == null)
+            return;
         for(CovidDetails cd: list)
-            cache.put(StringConverter.countryAndDate(cd.getCountry(), cd.getTime()), cd);
+            addToCache(cd, cache);
     }
 
     /** Adds one value to a cache */
     private void addToCache(CovidDetails cd, Cache<CovidDetails> cache){
-        cache.put(StringConverter.countryAndDate(cd.getCountry(), cd.getTime()), cd);
+        if(cd == null)
+            return;
+        cache.put(Dates.countryAndDate(cd.getCountry(), cd.getDay()), cd);
     }
 
     // This function is called once per request and not periodically,

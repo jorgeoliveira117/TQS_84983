@@ -8,7 +8,7 @@ import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class StringConverterTest {
+class DatesTest {
 
     @Test
     @DisplayName("The string displayed follows the correct format")
@@ -19,7 +19,7 @@ class StringConverterTest {
         // Simple test for today's date
         String expectedResult = "portugal-" + sdf.format(cal.getTime());
         Calendar today = Calendar.getInstance();
-        String countryDate = StringConverter.countryAndDate("portugal", today);
+        String countryDate = Dates.countryAndDate("portugal", today);
         assertEquals(expectedResult, countryDate);
     }
 
@@ -32,7 +32,7 @@ class StringConverterTest {
         cal.set(Calendar.YEAR, 2020);
         cal.set(Calendar.MONTH, 3);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        String countryDate = StringConverter.countryAndDate("PORTUgal", cal);
+        String countryDate = Dates.countryAndDate("PORTUgal", cal);
         assertEquals(expectedResult, countryDate);
     }
 }
