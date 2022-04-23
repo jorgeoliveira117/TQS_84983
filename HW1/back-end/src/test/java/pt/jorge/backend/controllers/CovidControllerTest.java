@@ -69,18 +69,6 @@ class CovidControllerTest {
         detailsList.add(cdTemp);
     }
     // ==================================
-    // /countries
-    @Test
-    @DisplayName("The result should be an OK with the results")
-    public void whenGetCountries_GetOk(){
-        RestAssuredMockMvc
-                .when()
-                    .get(getCountriesURL)
-                .then()
-                    .statusCode(200)
-                    .body("", hasItem("Portugal"));
-    }
-    // ==================================
     // /cases/{country}
     @Test
     public void whenGetCasesForValidCountry_GetResults(){
