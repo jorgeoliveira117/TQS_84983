@@ -67,6 +67,11 @@ public class Cache<T> {
         }
         return false;
     }
+    /** Reset the time for all keys*/
+    public void resetAll(){
+        for(String key: values.keySet())
+            this.reset(key);
+    }
 
     /** Clears expired keys. Returns number of removed keys*/
     public int clearExpired() {
