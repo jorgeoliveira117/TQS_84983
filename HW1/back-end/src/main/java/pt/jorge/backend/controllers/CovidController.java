@@ -25,7 +25,7 @@ import java.util.*;
 public class CovidController {
 
     private static final Logger log = LoggerFactory.getLogger(CovidFetcher.class);
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     // Minimum amount of countries to not request a sort
     private Calendar today;
 

@@ -68,7 +68,7 @@ public class CovidFetcher {
         dailyTop = new ArrayList<>();
         countries = Countries.getCountries();
         // Daily cache has a 30min ttl
-        dailyCases = new Cache<>(1800 * 1000, "Daily Cases");
+        dailyCases = new Cache<>(1800 * 1000L, "Daily Cases");
         // Older cache has a 30 min ttl
         olderCases = new HashMap<>();
 
@@ -95,11 +95,12 @@ public class CovidFetcher {
         ResponseEntity<CountryStatisticsResponse> stats = doHttpGet(url);
         if(stats.getBody() == null){
             log.info("[" + stats.getStatusCodeValue() + "] - No content");
+            return new ArrayList<>();
         }
         log.info("[" + stats.getStatusCodeValue() + "] - " + stats.getBody().getResponse().length + " results");
         CountryStatistic[] response = stats.getBody().getResponse();
         if(response.length == 0)
-            return null;
+            return new ArrayList<>();
         return CovidDetails.convert(response);
     }
 
@@ -143,7 +144,7 @@ public class CovidFetcher {
         // obtain new statistics for every country
         List<CovidDetails> stats = getFromURL(todayURL);
         // return the list or null if there are no elements
-        if(stats == null || stats.size() == 0)
+        if(stats.size() == 0)
             return null;
         // add statistics to the cache
         addToCache(stats, dailyCases);
@@ -195,20 +196,20 @@ public class CovidFetcher {
         if(olderCases.containsKey(country)){
             cache = olderCases.get(country);
         }else{
-            cache = new Cache<CovidDetails>(1800 * 1000, country);
+            cache = new Cache<CovidDetails>(1800 * 1000L, country);
         }
         List<CovidDetails> stats;
         // Check if there are suficient entries to give an evolution
         if(cache.size() < HISTORY_DAYS_MIN){
             String url = historyURL + "?country=" + country;
             stats = CovidDetails.reduce(getFromURL(url));
-            if(stats != null)
+            if(stats.size() > 0)
                 addToCache(stats, cache);
         }else{
             stats = new ArrayList<>(cache.values());
         }
         cache.resetAll();
-        if(stats == null || stats.size() == 0)
+        if(stats.size() == 0)
             return null;
         olderCases.put(country, cache);
         return stats;
@@ -219,7 +220,7 @@ public class CovidFetcher {
         // This function ignores the cache as several entries are required but only one of them is stored
         String url = historyURL + "?country=" + country + "&day=" + sdf.format(day.getTime());
         List<CovidDetails> stats = getFromURL(url);
-        if(stats == null || stats.size() == 0)
+        if(stats.size() == 0)
             return null;
         return stats;
     }
@@ -237,7 +238,7 @@ public class CovidFetcher {
                 return cache.get(key);
             }
         }else{
-            cache = new Cache<CovidDetails>(1800 * 1000, country);
+            cache = new Cache<CovidDetails>(1800 * 1000L, country);
         }
         // Get entry for that day
         List<CovidDetails> hist = CovidDetails.reduce(getHistory(country, day));
