@@ -1,6 +1,7 @@
 package pt.jorge.backend.cache;
 
 import com.sun.source.tree.Tree;
+import pt.jorge.backend.entities.CacheStats;
 import pt.jorge.backend.entities.helper.CountryStatistic;
 
 import java.util.*;
@@ -10,6 +11,12 @@ public class Cache<T> {
     private Map<String, Long> times;
     private Map<String, T> values;
 
+    /** Statistics */
+    private int successfulHits;
+    private int missedHits;
+
+    private String name;
+
     /** Time to live in milliseconds */
     private long ttl;
 
@@ -17,6 +24,14 @@ public class Cache<T> {
         this.ttl = ttl;
         times = new HashMap<>();
         values = new TreeMap<>();
+        missedHits = 0;
+        successfulHits = 0;
+        name = "";
+    }
+
+    public Cache(long ttl, String name){
+        this(ttl);
+        this.name = name;
     }
 
     public Cache(){
@@ -31,6 +46,22 @@ public class Cache<T> {
         return ttl;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
+    public int getSuccessfulHits(){
+        return successfulHits;
+    }
+
+    public int getMissedHits(){
+        return missedHits;
+    }
+
+
     /** Put a value in the cache adding the current time */
     public T put(String key, T value){
         times.put(key, System.currentTimeMillis());
@@ -39,6 +70,10 @@ public class Cache<T> {
     }
 
     public T get(String key){
+        if(!values.containsKey(key))
+            missedHits++;
+        else
+            successfulHits++;
         return values.get(key);
     }
 
@@ -105,6 +140,10 @@ public class Cache<T> {
 
     public int size() {
         return values.size();
+    }
+
+    public CacheStats getStats(){
+        return new CacheStats(name, ttl, values.size(), successfulHits, missedHits);
     }
 
 }

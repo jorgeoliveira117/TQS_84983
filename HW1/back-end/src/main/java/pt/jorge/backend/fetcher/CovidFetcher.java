@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pt.jorge.backend.cache.Cache;
+import pt.jorge.backend.entities.CacheStats;
 import pt.jorge.backend.entities.CovidDetails;
 import pt.jorge.backend.entities.CovidDetailsSimple;
 import pt.jorge.backend.entities.helper.CountryStatistic;
@@ -67,7 +68,7 @@ public class CovidFetcher {
         dailyTop = new ArrayList<>();
         countries = Countries.getCountries();
         // Daily cache has a 30min ttl
-        dailyCases = new Cache<>(1800 * 1000);
+        dailyCases = new Cache<>(1800 * 1000, "Daily Cases");
         // Older cache has a 30 min ttl
         olderCases = new HashMap<>();
 
@@ -189,14 +190,12 @@ public class CovidFetcher {
     public List<CovidDetails> getHistory(String country){
         clearExpired();
 
-        if(!countries.contains(country))
-            return null;
-
+        country = country.toLowerCase();
         Cache<CovidDetails> cache;
         if(olderCases.containsKey(country)){
             cache = olderCases.get(country);
         }else{
-            cache = new Cache<CovidDetails>(1800 * 1000);
+            cache = new Cache<CovidDetails>(1800 * 1000, country);
         }
         List<CovidDetails> stats;
         // Check if there are suficient entries to give an evolution
@@ -227,7 +226,7 @@ public class CovidFetcher {
     /** Returns the most recent statistic from a given country on a given day*/
     public CovidDetails getHistorySingle(String country, Calendar day){
         clearExpired();
-
+        country = country.toLowerCase();
         // Check if value is present through key
         String key = Dates.countryAndDate(country, day);
         Cache<CovidDetails> cache;
@@ -238,8 +237,7 @@ public class CovidFetcher {
                 return cache.get(key);
             }
         }else{
-            cache = new Cache<CovidDetails>(1800 * 1000);
-            olderCases.put(country, cache);
+            cache = new Cache<CovidDetails>(1800 * 1000, country);
         }
         // Get entry for that day
         List<CovidDetails> hist = CovidDetails.reduce(getHistory(country, day));
@@ -247,8 +245,19 @@ public class CovidFetcher {
             return null;
         CovidDetails stat = hist.get(0);
         addToCache(stat, cache);
+        olderCases.put(country, cache);
         return stat;
     }
+    /** Returns statistics of every cache */
+    public List<CacheStats> getCacheStats(){
+        List<CacheStats> cacheStats = new ArrayList<>();
+        cacheStats.add(dailyCases.getStats());
+        for(String key: olderCases.keySet()){
+            cacheStats.add(olderCases.get(key).getStats());
+        }
+        return cacheStats;
+    }
+
 
 
     private void sortTopCases(){

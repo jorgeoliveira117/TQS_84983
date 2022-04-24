@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import pt.jorge.backend.cache.Cache;
+import pt.jorge.backend.entities.CacheStats;
 import pt.jorge.backend.entities.CovidDetails;
 import pt.jorge.backend.entities.CovidDetailsSimple;
 import pt.jorge.backend.exceptions.CountryAndDateNotFoundException;
@@ -131,4 +132,11 @@ public class CovidController {
 
     // Maybe add an endpoint for the entire evolution of a certain country
 
+    /** Returns statistics for every cache*/
+    @GetMapping("/cache")
+    private List<CacheStats> cacheStats() {
+        log.info("GET /cache");
+
+        return fetcher.getCacheStats();
+    }
 }

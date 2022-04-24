@@ -8,7 +8,6 @@ import pt.jorge.backend.entities.helper.CountryStatistic;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CacheTest {
-/*
     private Cache cache;
     private CountryStatistic csPortugal;
     private CountryStatistic csSpain;
@@ -95,7 +94,5 @@ class CacheTest {
         assertFalse(cache.containsKey(portugal));
     }
 
-
- */
 
 }

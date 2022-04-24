@@ -53,6 +53,7 @@ class CovidControllerITTest {
     private final String getCasesTopURL = "/cases/top/{n}";
     private final String getEvolutionCountryURL = "/cases/evolution/{country}";
     private final String getCountriesURL = "/countries";
+    private final String getCacheURL = "/cache";
 
     List<CovidDetails> detailsList;
     CovidDetails cdTemp;
@@ -212,6 +213,7 @@ class CovidControllerITTest {
     // ==================================
     // /cases/evolution/{country}
     @Test
+    @DisplayName("The result should be a list where the specified country occurs in all entries")
     public void whenGetEvolutionForValidCountry_GetResults(){
         String country = "Portugal";
         RestAssuredMockMvc
@@ -222,6 +224,7 @@ class CovidControllerITTest {
                 .body("country", hasItem(country));
     }
     @Test
+    @DisplayName("There should be an error")
     public void whenGetEvolutionForInvalidCountry_GetResults(){
         String country = "Portugaaaaal";
         RestAssuredMockMvc
@@ -236,5 +239,18 @@ class CovidControllerITTest {
     @Test
     public void whenGetWorldEvolution_GetResults(){
         // Test not implemented due the huge volume of data being processed
+    }
+    // ==================================
+    // /cache
+    @Test
+    @DisplayName("At least a cache statistic should be shown")
+    public void whenGetCcache_GetResults(){
+        String cacheName = "Daily Cases";
+        RestAssuredMockMvc
+                .when()
+                    .get(getCacheURL)
+                .then()
+                    .statusCode(200)
+                    .body("name", hasItem(cacheName));
     }
 }
