@@ -1,16 +1,11 @@
 package pt.jorge.backend.entities.helper;
 
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.jorge.backend.fetcher.CovidFetcher;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Case {
-    private static final Logger log = LoggerFactory.getLogger(CovidFetcher.class);
 
     @JsonProperty("new")
     private String newCases;
@@ -21,8 +16,9 @@ public class Case {
     private String millionPop;
     private String total;
 
+    /** Empty constructor to initialize the variable*/
     public Case(){
-
+        // Empty constructor to initialize the variable
     }
 
     public String getNewCases() {

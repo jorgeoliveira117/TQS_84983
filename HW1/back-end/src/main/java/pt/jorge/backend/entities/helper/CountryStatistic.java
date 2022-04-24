@@ -3,7 +3,6 @@ package pt.jorge.backend.entities.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -22,8 +21,9 @@ public class CountryStatistic {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private final SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
-
+    /** Empty constructor to initialize the variable*/
     public CountryStatistic() {
+        // Empty constructor to initialize the variable
     }
 
     public String getContinent() {

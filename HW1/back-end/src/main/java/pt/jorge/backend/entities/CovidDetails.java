@@ -1,18 +1,10 @@
 package pt.jorge.backend.entities;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import pt.jorge.backend.entities.helper.Case;
 import pt.jorge.backend.entities.helper.CountryStatistic;
-import pt.jorge.backend.entities.helper.Death;
-import pt.jorge.backend.entities.helper.Test;
-import pt.jorge.backend.fetcher.CovidFetcher;
 import pt.jorge.backend.util.Dates;
 
-import javax.persistence.Entity;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class CovidDetails extends CovidDetailsSimple{
@@ -32,18 +24,6 @@ public class CovidDetails extends CovidDetailsSimple{
 
     public CovidDetails(){
         super();
-    }
-
-    public CovidDetails(String continent, String country, int population, Calendar day, int newCases, int activeCases, int newDeaths, int criticalCases, int recovered, int casesPerMillion, int totalCases, int deathsPerMillion, int totalDeaths, int testsPerMillion, int totalTests) {
-        super(continent, country, population, day, newCases, activeCases, newDeaths);
-        this.criticalCases = criticalCases;
-        this.recovered = recovered;
-        this.casesPerMillion = casesPerMillion;
-        this.totalCases = totalCases;
-        this.deathsPerMillion = deathsPerMillion;
-        this.totalDeaths = totalDeaths;
-        this.testsPerMillion = testsPerMillion;
-        this.totalTests = totalTests;
     }
 
     public int getCriticalCases() {
@@ -161,12 +141,13 @@ public class CovidDetails extends CovidDetailsSimple{
     /** Reduces a list with several CovidDetails into a smaller one without duplicated days */
     public static List<CovidDetails> reduce(List<CovidDetails> stats){
         if(stats == null)
-            return null;
+            return new ArrayList<>();
+
         List<CovidDetails> reducedList = new ArrayList<>();
         List<CovidDetails> itemsToRemove = new ArrayList<>();
         CovidDetails temp;
 
-        while (stats.size() > 0){
+        while (!stats.isEmpty()){
             itemsToRemove.add(stats.get(0));
             // Check items with the same day
             for(int i = 1; i < stats.size(); i++){

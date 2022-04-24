@@ -1,9 +1,6 @@
 package pt.jorge.backend.entities;
 
 
-import pt.jorge.backend.entities.helper.Case;
-import pt.jorge.backend.entities.helper.Death;
-import pt.jorge.backend.entities.helper.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

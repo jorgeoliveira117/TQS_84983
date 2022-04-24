@@ -10,8 +10,9 @@ public class Test {
     private String millionPop;
     private String total;
 
+    /** Empty constructor to initialize the variable*/
     public Test() {
-
+        // Empty constructor to initialize the variable
     }
 
     public String getMillionPop() {

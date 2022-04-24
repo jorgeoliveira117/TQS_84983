@@ -1,6 +1,5 @@
 package pt.jorge.backend.cache;
 
-import com.sun.source.tree.Tree;
 import pt.jorge.backend.entities.CacheStats;
 import pt.jorge.backend.entities.helper.CountryStatistic;
 

@@ -6,6 +6,9 @@ import java.util.List;
 
 public class Countries {
 
+    private Countries(){
+
+    }
     public static List<String> getCountries() {
         String[] countries = {
                 "Afghanistan",

@@ -12,7 +12,9 @@ public class Death {
     private String millionPop;
     private String total;
 
+    /** Empty constructor to initialize the variable*/
     public Death(){
+        // Empty constructor to initialize the variable
     }
 
     public String getNewCases() {

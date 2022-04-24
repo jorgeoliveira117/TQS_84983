@@ -7,9 +7,9 @@ public class CountryStatisticsResponse {
     private String get;
     private CountryStatistic[] response;
 
-
+    /** Empty constructor to initialize the variable*/
     public CountryStatisticsResponse(){
-
+        // Empty constructor to initialize the variable
     }
 
     public CountryStatistic[] getResponse() {
