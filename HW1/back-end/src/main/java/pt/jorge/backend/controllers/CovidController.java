@@ -2,6 +2,7 @@ package pt.jorge.backend.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
+// this is required to allow requests from react in the same machine
+@CrossOrigin(origins = "http://localhost:3000")
 public class CovidController {
 
     private static final Logger log = LoggerFactory.getLogger(CovidController.class);

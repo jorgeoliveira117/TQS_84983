@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pt.jorge.backend.cache.Cache;
@@ -18,6 +20,7 @@ import pt.jorge.backend.util.Dates;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@EnableScheduling
 @Service
 public class CovidFetcher {
 
@@ -42,6 +45,7 @@ public class CovidFetcher {
     private List<String> dailyTop;
     private static final int SORTED_MIN = 50;
     private static final int HISTORY_DAYS_MIN = 200;
+    private final int CACHE_CHECK = 60 * 1000; // once per minute
     private Map<String,Cache<CovidDetails>> olderCases;
     Calendar today;
 
@@ -99,14 +103,11 @@ public class CovidFetcher {
 
     /** Returns all countries */
     public List<String> getCountries(){
-        clearExpired();
         return countries;
     }
 
     /** Returns statistics for a country */
     public CovidDetails getToday(String country){
-        clearExpired();
-
         today = Calendar.getInstance();
         // Check if value is present through key
         String key = Dates.countryAndDate(country, today);
@@ -120,7 +121,6 @@ public class CovidFetcher {
 
     /** Returns statistics from every country */
     public List<CovidDetails> getToday(){
-        clearExpired();
         // check if there are elements in the cache
         if(dailyCases.size() > 0)
             return new ArrayList<>(dailyCases.values());
@@ -135,8 +135,6 @@ public class CovidFetcher {
     }
     /** Returns statistics from every continent */
     public List<CovidDetails> getContinents(){
-        clearExpired();
-
         if(dailyCases.size() == 0)
             getToday();
 
@@ -153,8 +151,6 @@ public class CovidFetcher {
     }
     /** Returns n countries with the most cases */
     public List<CovidDetails> getTop(int n){
-        clearExpired();
-
         if(dailyCases.size() == 0)
             getToday();
 
@@ -171,8 +167,6 @@ public class CovidFetcher {
     }
     /** Returns every daily statistic from a given country */
     public List<CovidDetails> getHistory(String country){
-        clearExpired();
-
         country = country.toLowerCase();
         Cache<CovidDetails> cache;
         if(olderCases.containsKey(country)){
@@ -198,7 +192,6 @@ public class CovidFetcher {
     }
     /** Returns every statistics from a given country on a given day*/
     public List<CovidDetails> getHistory(String country, Calendar day){
-        clearExpired();
         // This function ignores the cache as several entries are required but only one of them is stored
         String url = HISTORY_URL + "?country=" + country + "&day=" + sdf.format(day.getTime());
         List<CovidDetails> stats = getFromURL(url);
@@ -208,7 +201,6 @@ public class CovidFetcher {
     }
     /** Returns the most recent statistic from a given country on a given day*/
     public CovidDetails getHistorySingle(String country, Calendar day){
-        clearExpired();
         country = country.toLowerCase();
         // Check if value is present through key
         String key = Dates.countryAndDate(country, day);
@@ -309,7 +301,9 @@ public class CovidFetcher {
     // This function is called once per request and not periodically,
     //      to heavily reduce constraint and avoid conficts
     /** Clears expired cache keys */
+    @Scheduled(fixedDelay=CACHE_CHECK)
     private void clearExpired(){
+        log.info("Checking for expired cache keys...");
         List<String> keysToRemove = new ArrayList<>();
         dailyCases.clearExpired();
         for(Map.Entry<String, Cache<CovidDetails>> entry: olderCases.entrySet()){
@@ -318,6 +312,7 @@ public class CovidFetcher {
                 keysToRemove.add(entry.getKey());
         }
         for(String key: keysToRemove){
+            log.info("Removed cache for " + key);
             olderCases.remove(key);
         }
     }
