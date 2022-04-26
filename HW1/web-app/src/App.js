@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Routes as Switch } from 'react-router-d
 import Home from './Home';
 import CountryDetails from './CountryDetails';
 import World from './World';
+import Cache from './Cache';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Switch>
             <Route exact path="/" element={<Home/>}/>
             <Route path="/world" element={<World/>}/>
+            <Route path="/cache" element={<Cache/>}/>
             <Route path="/country/:name"  element={<CountryDetails/>}/>
             <Route path="*" element={<World/>}/>
           </Switch>

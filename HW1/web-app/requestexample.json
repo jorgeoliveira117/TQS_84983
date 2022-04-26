@@ -1,0 +1,18 @@
+{   
+    "continent":"Asia",
+    "country":"Japan",
+    "population":125775499,
+    "day":"2022-04-26T00:00:00.000+00:00",
+    "time":"2022-04-26T12:45:02.000+00:00",
+    "newCases":28495,
+    "activeCases":435999,
+    "criticalCases":200,
+    "recovered":7223164,
+    "totalCases":7688507,
+    "casesPerMillion":61129,
+    "newDeaths":36,
+    "totalDeaths":29344,
+    "deathsPerMillion":233,
+    "totalTests":46888808,
+    "testsPerMillion":372798
+}

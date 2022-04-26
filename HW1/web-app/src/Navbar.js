@@ -9,8 +9,14 @@ const Navbar = () => {
 
     
     const URL = "http://localhost:8080/countries";
-    const { data: countries , loading, error } = useFetch(URL);
+    const { data , loading, error } = useFetch(URL);
     const navigate = useNavigate();
+    var countries = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania"];
+
+    if(data){
+        for(var i = 0; i < data.length; i++)
+            countries.push(data[i]);
+    }
 
 
     if(error)
@@ -22,16 +28,23 @@ const Navbar = () => {
         navigate("/country/" + value);
     }
 
+    const goToCachePage = () => {
+        navigate("/cache");
+    }
+
     return ( 
         <Row>
-            <Col style={{textAlign:"left"}}>
+            <Col sm={"auto"} style={{textAlign:"left"}}>
                 <RouterLink as to="/" style={{textDecoration:"none"}}>
                     <h2 style={{color:"bisque"}}>
-                        Covid Statistics App
+                        Covid Statistics
                     </h2>
                 </RouterLink>
             </Col>
-            <Col>
+            <Col style={{textAlign:"left"}}>
+                <Button variant="light" onClick={goToCachePage} style={{paddingTop:"10px"}}>
+                    Cache Statistics
+                </Button>
             </Col>
             <Col>
                 <Row>

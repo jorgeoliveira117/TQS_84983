@@ -179,7 +179,7 @@ public class CovidFetcher {
         if(cache.size() < HISTORY_DAYS_MIN){
             String url = HISTORY_URL + "?country=" + country;
             stats = CovidDetails.reduce(getFromURL(url));
-            if(stats.isEmpty())
+            if(!stats.isEmpty())
                 addToCache(stats, cache);
         }else{
             stats = new ArrayList<>(cache.values());

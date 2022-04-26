@@ -40,3 +40,21 @@ hr{
 option{
   font-size: larger;
 }
+
+.continent{
+  width:auto;
+  max-width: 80px;
+  object-fit: cover;
+}
+
+.flag{
+  height:auto;
+  max-height: 64px;
+  object-fit: cover;
+  font-size: x-small;
+  padding-left: 20px;
+}
+.custom-hr{
+  color: bisque;
+  border-color: bisque;
+}
