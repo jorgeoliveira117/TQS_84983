@@ -3,17 +3,12 @@ package pt.jorge.backend.fetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import pt.jorge.backend.cache.Cache;
 import pt.jorge.backend.entities.CacheStats;
 import pt.jorge.backend.entities.CovidDetails;
-import pt.jorge.backend.entities.helper.CountryStatistic;
-import pt.jorge.backend.entities.helper.CountryStatisticsResponse;
 import pt.jorge.backend.util.Countries;
 import pt.jorge.backend.util.Dates;
 
@@ -22,22 +17,15 @@ import java.util.*;
 
 @EnableScheduling
 @Service
-public class CovidFetcher {
-
-    private final RestTemplate restTemplate;
-
-    private static final Logger log = LoggerFactory.getLogger(CovidFetcher.class);
-    // Not the best aproach, but as the git repository is only shared with the teacher it should be 'safe';
-    private static final String API_KEY = "8b7adc7dd1mshc90568bcfe94194p19bf1ajsnb9339fef134f";
-
-
+public class CovidService {
 
     // Used in every request
-    private final HttpEntity<CountryStatisticsResponse> request;
-
     private static final String TODAY_URL = "https://covid-193.p.rapidapi.com/statistics";
     private static final String HISTORY_URL = "https://covid-193.p.rapidapi.com/history";
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+    private static final Logger log = LoggerFactory.getLogger(CovidService.class);
+
 
     private final List<String> countries;
     private final List<String> continents;
@@ -49,16 +37,11 @@ public class CovidFetcher {
     private Map<String,Cache<CovidDetails>> olderCases;
     Calendar today;
 
+    private CovidApiFetcher fetcher;
+
     @Autowired
-    public CovidFetcher(RestTemplateBuilder builder){
-        restTemplate = builder.build();
-        // Configure the headers for every request
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("X-RapidAPI-Host", "covid-193.p.rapidapi.com");
-        headers.set("X-RapidAPI-Key", API_KEY);
-        request = new HttpEntity<>(headers);
+    public CovidService(CovidApiFetcher fetcher){
+        this.fetcher = fetcher;
 
         // Simple cache configuration
         continents = new ArrayList<>();
@@ -75,29 +58,6 @@ public class CovidFetcher {
         checkContinents();
 
         today = Calendar.getInstance();
-    }
-
-    private ResponseEntity<CountryStatisticsResponse> doHttpGet(String url){
-        return restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                CountryStatisticsResponse.class
-        );
-    }
-
-    public List<CovidDetails> getFromURL(String url){
-        log.info("Creating GET to {}", url);
-        ResponseEntity<CountryStatisticsResponse> stats = doHttpGet(url);
-        if(stats.getBody() == null){
-            log.info("[{}] - No content", stats.getStatusCodeValue());
-            return new ArrayList<>();
-        }
-        log.info("[{}] - {} results", stats.getStatusCodeValue() , stats.getBody().getResponse().length);
-        CountryStatistic[] response = stats.getBody().getResponse();
-        if(response.length == 0)
-            return new ArrayList<>();
-        return CovidDetails.convert(response);
     }
 
 
@@ -128,10 +88,11 @@ public class CovidFetcher {
         if(dailyCases.size() > 0)
             return new ArrayList<>(dailyCases.values());
         // obtain new statistics for every country
-        List<CovidDetails> stats = getFromURL(TODAY_URL);
+        List<CovidDetails> stats = fetcher.getFromURL(TODAY_URL);
         // return an empty list if there are no elements
         if(stats.isEmpty())
             return new ArrayList<>();
+
         // add statistics to the cache
         addToCache(stats, dailyCases);
         return stats;
@@ -176,13 +137,14 @@ public class CovidFetcher {
         if(olderCases.containsKey(country)){
             cache = olderCases.get(country);
         }else{
+            log.debug("Created new cache for {}", country);
             cache = new Cache<>(1800 * 1000L, country);
         }
         List<CovidDetails> stats;
         // Check if there are suficient entries to give an evolution
         if(cache.size() < HISTORY_DAYS_MIN){
             String url = HISTORY_URL + "?country=" + country;
-            stats = CovidDetails.reduce(getFromURL(url));
+            stats = CovidDetails.reduce(fetcher.getFromURL(url));
             if(!stats.isEmpty())
                 addToCache(stats, cache);
         }else{
@@ -198,7 +160,7 @@ public class CovidFetcher {
     public List<CovidDetails> getHistory(String country, Calendar day){
         // This function ignores the cache as several entries are required but only one of them is stored
         String url = HISTORY_URL + "?country=" + country + "&day=" + sdf.format(day.getTime());
-        List<CovidDetails> stats = getFromURL(url);
+        List<CovidDetails> stats = fetcher.getFromURL(url);
         if(stats.isEmpty())
             return new ArrayList<>();
         return stats;
@@ -216,6 +178,7 @@ public class CovidFetcher {
                 return cache.get(key);
             }
         }else{
+            log.debug("Created new cache for {}", country);
             cache = new Cache<>(1800 * 1000L, country);
         }
         // Get entry for that day
@@ -244,15 +207,22 @@ public class CovidFetcher {
         if(today.get(Calendar.HOUR) <= 8 && dailyCases.get(Dates.countryAndDate("all", today)) == null)
             today.add(Calendar.HOUR, -today.get(Calendar.HOUR));
         String todayString = sdf.format(today.getTime());
+
+        log.debug("Checking for top cases...");
         // Check if dailyTop is from today
-        if(!dailyTop.isEmpty() && (dailyTop.size() < SORTED_MIN || dailyTop.get(0).contains(todayString))){
-            // if dailyTop list is lower than the minimum required, get new cases
+        if(!dailyTop.isEmpty() && dailyTop.size() > SORTED_MIN && dailyTop.get(0).contains(todayString)){
+            log.debug("Top cases are already sorted");
+            return;
+        }
+        else{
+            // if dailyTop list is lower than the minimum required or not from today, get new cases
             addToCache(getToday(), dailyCases);
         }
+        log.debug("Top cases need to be calculated");
         // get dailyCases that contains cases from today
         List<String> keysToCheck = new ArrayList<>();
         for(String key : dailyCases.keySet()){
-            if(key.contains(todayString))
+            if(key.contains(todayString) && !dailyCases.get(key).getCountry().equalsIgnoreCase(dailyCases.get(key).getContinent()))
                 keysToCheck.add(key);
         }
         // Only sort today's cases
@@ -282,6 +252,7 @@ public class CovidFetcher {
 
     /** Checks continents and adds them to a list */
     private void checkContinents(){
+        log.debug("Checking available continents");
         for(CovidDetails cd : dailyCases.values()){
             if(cd.getCountry().equalsIgnoreCase(cd.getContinent()))
                 continents.add(cd.getCountry());
@@ -309,7 +280,7 @@ public class CovidFetcher {
     /** Clears expired cache keys */
     @Scheduled(fixedDelay=CACHE_CHECK)
     private void clearExpired(){
-        log.info("Checking for expired cache keys...");
+        log.debug("Checking for expired cache keys...");
         List<String> keysToRemove = new ArrayList<>();
         dailyCases.clearExpired();
         for(Map.Entry<String, Cache<CovidDetails>> entry: olderCases.entrySet()){

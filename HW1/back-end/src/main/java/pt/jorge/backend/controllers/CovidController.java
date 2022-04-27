@@ -12,7 +12,7 @@ import pt.jorge.backend.exceptions.CountryAndDateNotFoundException;
 import pt.jorge.backend.exceptions.CountryNotFoundException;
 import pt.jorge.backend.exceptions.InvalidDateException;
 import pt.jorge.backend.exceptions.InvalidIdException;
-import pt.jorge.backend.fetcher.CovidFetcher;
+import pt.jorge.backend.fetcher.CovidService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,26 +27,31 @@ public class CovidController {
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     // Covid API fetcher
-    private final CovidFetcher fetcher;
+    private final CovidService service;
 
-    public CovidController(CovidFetcher fetcher){
-        this.fetcher = fetcher;
+    public CovidController(CovidService fetcher){
+        this.service = fetcher;
     }
 
     /** Returns all countries*/
     @GetMapping("/countries")
     public List<String> countries() {
         log.info("GET /countries");
-        return fetcher.getCountries();
+        List<String> countries = service.getCountries();
+        log.info("Returning countries [{} entries]", countries.size());
+        return countries;
     }
 
     /** Returns today's Covid Details for a country*/
     @GetMapping("/cases/{country}")
     public CovidDetails casesForCountryToday(@PathVariable String country) {
         log.info("GET /cases/{}", country);
-        CovidDetails detailsForCountry = fetcher.getToday(country);
-        if(detailsForCountry == null)
+        CovidDetails detailsForCountry = service.getToday(country);
+        if(detailsForCountry == null){
+            log.warn("Country {} not found", country);
             throw new CountryNotFoundException(country);
+        }
+        log.info("Returning today's cases for {}", country);
         return detailsForCountry;
     }
 
@@ -59,13 +64,18 @@ public class CovidController {
         try{
             day.setTime(sdf.parse(date));
         } catch (ParseException e) {
+            log.warn("Invalid date {}", date);
             throw new InvalidDateException(date);
         }
 
-        CovidDetails detailsForCountry = fetcher.getHistorySingle(country, day);
+        CovidDetails detailsForCountry = service.getHistorySingle(country, day);
 
-        if(detailsForCountry == null)
+        if(detailsForCountry == null){
+            log.warn("Cases not found for {} on {}", country, date);
             throw new CountryAndDateNotFoundException(country, date);
+        }
+
+        log.info("Returning cases for {} on {}", country, date);
         return detailsForCountry;
     }
 
@@ -73,15 +83,18 @@ public class CovidController {
     @GetMapping("/cases/continents")
     public List<CovidDetails> casesForEachContinent() {
         log.info("GET /cases/continents");
-
-        return fetcher.getContinents();
+        List<CovidDetails> continentCases  = service.getContinents();
+        log.info("Returning today's cases for continents [{} entries]", continentCases.size());
+        return continentCases;
     }
 
     /** Returns today's cases for the whole world*/
     @GetMapping("/cases")
     public List<CovidDetails> casesWorld() {
         log.info("GET /cases");
-        return fetcher.getToday();
+        List<CovidDetails> todayCases  = service.getToday();
+        log.info("Returning today's cases [{} entries]", todayCases.size());
+        return todayCases;
     }
 
     /** Returns Simple Covid Details for the top n countries with most cases*/
@@ -90,10 +103,12 @@ public class CovidController {
         log.info("GET /cases/top/{}", n);
 
         if(n < 0){
+            log.warn("Id {} is invalid", n);
             throw new InvalidIdException(n);
         }
-
-        return fetcher.getTop(n);
+        List<CovidDetails> topCases  = service.getTop(n);
+        log.info("Returning the {} top cases", topCases.size());
+        return topCases;
     }
 
     /** Returns the evolution of the last 7 days for a countries*/
@@ -101,9 +116,11 @@ public class CovidController {
     public List<CovidDetails> evolution(@PathVariable String country) {
         log.info("GET /cases/evolution/{}", country);
 
-        CovidDetails cd = fetcher.getToday(country);
-        if(cd == null)
+        CovidDetails cd = service.getToday(country);
+        if(cd == null){
+            log.warn("Country {} not found", country);
             throw new CountryNotFoundException(country);
+        }
 
         Calendar day = Calendar.getInstance();
         List<CovidDetails> evolution = new ArrayList<>();
@@ -111,10 +128,11 @@ public class CovidController {
 
         for(int i = 1; i < 7; i++){
             day.add(Calendar.DAY_OF_MONTH, -1);
-            cd = fetcher.getHistorySingle(country, day);
+            cd = service.getHistorySingle(country, day);
             if(cd != null)
                 evolution.add(cd);
         }
+        log.info("Returning Last 7 days for {}", country);
         return evolution;
     }
 
@@ -122,8 +140,9 @@ public class CovidController {
     @GetMapping("/cases/world/evolution")
     public List<CovidDetails> evolution() {
         log.info("GET /cases/world/evolution");
-
-        return fetcher.getHistory("all");
+        List<CovidDetails> evolution =  service.getHistory("all");
+        log.info("Returning World evolution with {} entries", evolution.size());
+        return evolution;
     }
 
     // Maybe add an endpoint for the entire evolution of a certain country
@@ -132,7 +151,8 @@ public class CovidController {
     @GetMapping("/cache")
     public List<CacheStats> cacheStats() {
         log.info("GET /cache");
-
-        return fetcher.getCacheStats();
+        List<CacheStats> cacheStats =  service.getCacheStats();
+        log.info("Returning {} cache statistics", cacheStats.size());
+        return cacheStats;
     }
 }
