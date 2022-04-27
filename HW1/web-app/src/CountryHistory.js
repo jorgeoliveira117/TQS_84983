@@ -1,7 +1,6 @@
-import { useParams } from "react-router-dom";
 import useFetch from "./useFetch";
 import {Button, Col, Container, Row} from 'react-bootstrap';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 const CountryHistory = ({country, URL, title}) => {
@@ -33,28 +32,26 @@ const CountryHistory = ({country, URL, title}) => {
     return ( 
         <div className="CountryHistory">
             {loading && <h4><i style={{color:"orange"}}>Loading...</i></h4> }
-            {error && <h4><i style={{color:"red"}}>Couldn't find history of statistics</i></h4>}
-
             {days &&
             <Container>
                 <Row className="justify-content-md-center">
                     <Col md="auto">
                         <Row>
                             <Col sm={"auto"}>
-                            <h4 style={{color:"bisque"}}>{title}</h4>
+                            <h4 name="statsHistory" style={{color:"bisque"}}>{title}</h4>
                             </Col>
                             <Col sm={"auto"}>
-                                <Button variant="info" onClick={(e) => (setDataKey("Cases"))}>
+                                <Button name="casesButton"  variant="info" onClick={(e) => (setDataKey("Cases"))}>
                                 Cases
                                 </Button>
                             </Col>
                             <Col sm={"auto"}>
-                                <Button variant="info" onClick={(e) => (setDataKey("Critical Cases"))}>
+                                <Button name="criticalButton" variant="info" onClick={(e) => (setDataKey("Critical Cases"))}>
                                 Critical Cases
                                 </Button>
                             </Col>
                             <Col sm={"auto"}>
-                                <Button variant="info" onClick={(e) => (setDataKey("Deaths"))}>
+                                <Button name="deathsButton" variant="info" onClick={(e) => (setDataKey("Deaths"))}>
                                 Deaths
                                 </Button>
                             </Col>
@@ -67,12 +64,6 @@ const CountryHistory = ({country, URL, title}) => {
                             <YAxis />
                             <Tooltip />
                         </LineChart>
-                    </Col>
-                    <Col md={1}>
-                        <Row>
-                        
-                        </Row>
-                        
                     </Col>
                 </Row>
             </Container>

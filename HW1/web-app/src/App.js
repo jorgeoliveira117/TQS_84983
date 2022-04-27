@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import TopList from './TopList';
 import Navbar from './Navbar';
-import {Container, Col, Row} from 'react-bootstrap';
+import {Container} from 'react-bootstrap';
 import { BrowserRouter as Router, Route, Routes as Switch } from 'react-router-dom';
 import Home from './Home';
 import CountryDetails from './CountryDetails';

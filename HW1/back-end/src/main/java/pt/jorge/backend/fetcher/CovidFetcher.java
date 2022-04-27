@@ -109,6 +109,9 @@ public class CovidFetcher {
     /** Returns statistics for a country */
     public CovidDetails getToday(String country){
         today = Calendar.getInstance();
+        // A cheat to dodge the delay that the API has to refresh cases for the new day
+        if(today.get(Calendar.HOUR) <= 8 && dailyCases.get(Dates.countryAndDate("all", today)) == null)
+            today.add(Calendar.HOUR, -today.get(Calendar.HOUR));
         // Check if value is present through key
         String key = Dates.countryAndDate(country, today);
         if(dailyCases.containsKey(key)){
@@ -137,8 +140,9 @@ public class CovidFetcher {
     public List<CovidDetails> getContinents(){
         if(dailyCases.size() == 0)
             getToday();
-
         today = Calendar.getInstance();
+        if(today.get(Calendar.HOUR) <= 8 && dailyCases.get(Dates.countryAndDate("all", today)) == null)
+            today.add(Calendar.HOUR, -today.get(Calendar.HOUR));
         List<CovidDetails> contDetails = new ArrayList<>();
         String key;
         for(String continent: continents){
@@ -237,6 +241,8 @@ public class CovidFetcher {
 
     private void sortTopCases(){
         today = Calendar.getInstance();
+        if(today.get(Calendar.HOUR) <= 8 && dailyCases.get(Dates.countryAndDate("all", today)) == null)
+            today.add(Calendar.HOUR, -today.get(Calendar.HOUR));
         String todayString = sdf.format(today.getTime());
         // Check if dailyTop is from today
         if(!dailyTop.isEmpty() && (dailyTop.size() < SORTED_MIN || dailyTop.get(0).contains(todayString))){

@@ -6,8 +6,9 @@ import TopListItem from "./TopListItem";
 function TopList () {
 
     const topN = 10;
-    const nContinents = 5;
-    const URL = "http://localhost:8080/cases/top/" + (topN + nContinents);
+    //const nContinents = 5;
+    //const URL = "http://localhost:8080/cases/top/" + (topN + nContinents);
+    const URL = "http://localhost:8080/cases/top/" + (topN);
 
     const { data , loading, error } = useFetch(URL);
 

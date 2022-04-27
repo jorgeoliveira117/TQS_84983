@@ -50,7 +50,7 @@ const Navbar = () => {
                 <Row>
                     <Form>
                         <Form.Group>
-                            <Form.Select onChange={(e) => handleChange(e.target.value)}>
+                            <Form.Select name="selectCountry" onChange={(e) => handleChange(e.target.value)}>
                                 <option value="default">Select a country</option>
                                 {loading && <option disabled>Getting countries...</option>}
                                 {countries &&

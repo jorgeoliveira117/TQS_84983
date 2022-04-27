@@ -1,6 +1,6 @@
 function TopListItem ({stats}) {
-    if(stats.country === stats.continent)
-        return;
+    //if(stats.country === stats.continent)
+    //    return;
     
     return ( 
         <tr>

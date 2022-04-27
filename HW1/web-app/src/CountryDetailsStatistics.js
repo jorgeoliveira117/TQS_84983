@@ -1,8 +1,6 @@
-import { useParams } from "react-router-dom";
 import useFetch from "./useFetch";
 import {Col, Container, Row} from 'react-bootstrap';
-import { useEffect, useState } from "react";
-import DatePicker from 'react-date-picker'
+import { useEffect } from "react";
 
 const CountryDetailsStatistics = ({country, date, setContinent}) => {
     const BASE_URL = "http://localhost:8080/cases/" + country;
@@ -41,6 +39,8 @@ const CountryDetailsStatistics = ({country, date, setContinent}) => {
             {loading && <h4><i style={{color:"orange"}}>Loading...</i></h4>}
             {!loading && error && data && !data.time.includes(date) &&
                 <h4><i style={{color:"red"}}>Couldn't find statistics for country {country} {date && <i  style={{color:"red"}}>on {date.toString()}</i>}</i></h4>}
+            {error && !data &&
+                <h4><i style={{color:"red"}}>Couldn't find statistics for country {country} {date && <i  style={{color:"red"}}>on {date.toString()}</i>}</i></h4>}
             {data &&
             <Container>
                 <Row>
@@ -56,7 +56,7 @@ const CountryDetailsStatistics = ({country, date, setContinent}) => {
                 <br/>
                 <Row>
                     <Row>
-                        <h4><i>Statistics for {data.day.replace('T', ' ').substring(0, 10)}</i></h4>
+                        <h4><i name="statsDay">Statistics for {data.day.replace('T', ' ').substring(0, 10)}</i></h4>
                     </Row>
                     <Col  sm={4} style={{fontSize:"larger"}}>
                         <h4><b style={{color:"bisque"}}>Cases</b></h4>

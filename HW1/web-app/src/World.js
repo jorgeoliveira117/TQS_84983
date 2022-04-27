@@ -1,7 +1,5 @@
-import { useParams } from "react-router-dom";
-import useFetch from "./useFetch";
-import {Col, Container, Row, Button} from 'react-bootstrap';
-import { useEffect, useState } from "react";
+import {Col, Row, Button} from 'react-bootstrap';
+import { useState } from "react";
 import DatePicker from 'react-date-picker'
 import CountryDetailsStatistics from "./CountryDetailsStatistics";
 import CountryHistory from "./CountryHistory";
