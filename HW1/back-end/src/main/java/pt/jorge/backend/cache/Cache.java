@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.jorge.backend.entities.CacheStats;
 import pt.jorge.backend.entities.helper.CountryStatistic;
-import pt.jorge.backend.fetcher.CovidService;
 
 import java.util.*;
 

@@ -33,7 +33,6 @@ public class CovidService {
     private List<String> dailyTop;
     private static final int SORTED_MIN = 50;
     private static final int HISTORY_DAYS_MIN = 200;
-    private final int CACHE_CHECK = 60 * 1000; // once per minute
     private Map<String,Cache<CovidDetails>> olderCases;
     Calendar today;
 
@@ -278,7 +277,7 @@ public class CovidService {
     // This function is called once per request and not periodically,
     //      to heavily reduce constraint and avoid conficts
     /** Clears expired cache keys */
-    @Scheduled(fixedDelay=CACHE_CHECK)
+    @Scheduled(fixedDelay=60 * 1000)
     private void clearExpired(){
         log.debug("Checking for expired cache keys...");
         List<String> keysToRemove = new ArrayList<>();
@@ -289,7 +288,7 @@ public class CovidService {
                 keysToRemove.add(entry.getKey());
         }
         for(String key: keysToRemove){
-            log.info("Removed cache for " + key);
+            log.info("Removed cache for {}", key);
             olderCases.remove(key);
         }
     }

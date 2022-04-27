@@ -22,7 +22,7 @@ public class CovidApiFetcher {
     // Not the best aproach, but as the git repository is only shared with the teacher it should be 'safe';
     private static final String API_KEY = "8b7adc7dd1mshc90568bcfe94194p19bf1ajsnb9339fef134f";
 
-    private static final Logger log = LoggerFactory.getLogger(CovidService.class);
+    private static final Logger log = LoggerFactory.getLogger(CovidApiFetcher.class);
 
 
     private final HttpEntity<CountryStatisticsResponse> request;
